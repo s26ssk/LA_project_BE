@@ -16,4 +16,5 @@ public interface IEmployeeService {
     EmployeeDetailDTO getEmployeeDetail(Long id);
     boolean deleteEmployeeById(Long employeeId);
     boolean existsById(Long employeeId);
+    boolean updateEmployee(Long employeeId, EmployeeRequest employeeRequest);
 }

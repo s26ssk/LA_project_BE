@@ -59,4 +59,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
                            @Param("departmentId") Long departmentId);
 
     boolean existsByEmployeeLoginId(String employeeLoginId);
+
+    boolean existsByEmployeeLoginIdAndEmployeeIdNot(String employeeLoginId, Long employeeId);
+
 }

@@ -8,6 +8,7 @@ import java.util.Set;
 
 @Data
 public class EmployeeRequest {
+    private Long employeeId;
     private String employeeName;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd")
     private Date employeeBirthDate;

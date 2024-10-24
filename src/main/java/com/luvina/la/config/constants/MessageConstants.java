@@ -44,9 +44,11 @@ public class MessageConstants {
     public static final String DATE_FORMAT_MESSAGE = "yyyy/MM/dd";
 
     // Success messages
-    // "Thêm nhân viên thành công"
+    // Thêm nhân viên thành công
     public static final String MSG001 = "MSG001";
-    // "Xóa nhân viên thành công"
+    // Update nhân viên thành công
+    public static final String MSG002 = "MSG002";
+    // Xóa nhân viên thành công
     public static final String MSG003 = "MSG003";
 
     // Parameter names

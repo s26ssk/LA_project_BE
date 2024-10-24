@@ -81,7 +81,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
             employeesCertification.setCertification(certification);
             employeesCertification.setStartDate(certRequest.getCertificationStartDate());
             employeesCertification.setEndDate(certRequest.getCertificationEndDate());
-            employeesCertification.setScore(certRequest.getEmployeeCertificationScore());
+            employeesCertification.setScore(certRequest.getCertificationScore());
             employeesCertification.setEmployee(employee);
             certifications.add(employeesCertification);
         }
@@ -111,9 +111,9 @@ public class EmployeeServiceImpl implements IEmployeeService {
                     EmployeeDetailDTO.CertificationDTO certDTO = new EmployeeDetailDTO.CertificationDTO();
                     certDTO.setCertificationId(empCert.getCertification().getCertificationId());
                     certDTO.setCertificationName(empCert.getCertification().getCertificationName());
-                    certDTO.setStartDate(empCert.getStartDate());
-                    certDTO.setEndDate(empCert.getEndDate());
-                    certDTO.setScore(empCert.getScore());
+                    certDTO.setCertificationStartDate(empCert.getStartDate());
+                    certDTO.setCertificationEndDate(empCert.getEndDate());
+                    certDTO.setCertificationScore(empCert.getScore());
                     return certDTO;
                 })
                 .collect(Collectors.toSet());
@@ -127,6 +127,61 @@ public class EmployeeServiceImpl implements IEmployeeService {
     public boolean deleteEmployeeById(Long employeeId) {
         employeeCertificationRepository.deleteByEmployeeId(employeeId);
         employeeRepository.deleteById(employeeId);
+        return true;
+    }
+
+    @Transactional
+    @Override
+    public boolean updateEmployee(Long employeeId, EmployeeRequest employeeRequest) {
+        Employee employee = employeeRepository.findById(employeeId).orElse(null);
+        if (employee == null) return false;
+
+        employee.setEmployeeName(employeeRequest.getEmployeeName());
+        employee.setEmployeeBirthDate(employeeRequest.getEmployeeBirthDate());
+        employee.setEmployeeEmail(employeeRequest.getEmployeeEmail());
+        employee.setEmployeeTelephone(employeeRequest.getEmployeeTelephone());
+        employee.setEmployeeNameKana(employeeRequest.getEmployeeNameKana());
+        employee.setEmployeeLoginId(employeeRequest.getEmployeeLoginId());
+
+        if (employeeRequest.getEmployeeLoginPassword() != null && !employeeRequest.getEmployeeLoginPassword().isEmpty()) {
+            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            String encodedPassword = passwordEncoder.encode(employeeRequest.getEmployeeLoginPassword());
+            employee.setEmployeeLoginPassword(encodedPassword);
+        }
+
+        Department department = departmentRepository.findById(employeeRequest.getDepartmentId())
+                .orElse(new Department());
+        employee.setDepartment(department);
+
+        if (employeeRequest.getCertifications().isEmpty()) {
+            employeeCertificationRepository.deleteByEmployeeId(employeeId);
+        } else {
+            Set<EmployeesCertification> existingCertifications = employee.getEmployeesCertifications();
+            Set<EmployeesCertification> updatedCertifications = new HashSet<>();
+
+            for (CertificationRequest certRequest : employeeRequest.getCertifications()) {
+                Certification certification = certificationRepository.findById(certRequest.getCertificationId())
+                        .orElse(new Certification());
+
+
+                EmployeesCertification employeesCertification = existingCertifications.stream()
+                        .filter(cert -> cert.getCertification().getCertificationId().equals(certRequest.getCertificationId()))
+                        .findFirst()
+                        .orElse(new EmployeesCertification());
+
+                employeesCertification.setCertification(certification);
+                employeesCertification.setStartDate(certRequest.getCertificationStartDate());
+                employeesCertification.setEndDate(certRequest.getCertificationEndDate());
+                employeesCertification.setScore(certRequest.getCertificationScore());
+                employeesCertification.setEmployee(employee);
+
+                updatedCertifications.add(employeesCertification);
+            }
+
+            employee.setEmployeesCertifications(updatedCertifications);
+        }
+
+        employeeRepository.save(employee);
         return true;
     }
 

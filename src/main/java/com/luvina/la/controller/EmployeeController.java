@@ -73,7 +73,7 @@ public class EmployeeController {
     @PostMapping
     public ResponseEntity<?> addEmployee(@RequestBody EmployeeRequest employeeRequest) {
         try {
-            ApiResponse validationResponse = employeeValidator.validateEmployee(employeeRequest);
+            ApiResponse validationResponse = employeeValidator.validateAddEmployee(employeeRequest);
             if (validationResponse != null) {
                 return new ResponseEntity<>(validationResponse, HttpStatus.OK);
             }
@@ -94,6 +94,13 @@ public class EmployeeController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getEmployeeDetail(@PathVariable Long id) {
         try {
+            if (id == null) {
+                return new ResponseEntity<>(new ApiResponse(CODE_500, ER001, getParams(ID_PARAMETER)), HttpStatus.BAD_REQUEST);
+            }
+            boolean employeeExists = employeeService.existsById(id);
+            if (!employeeExists) {
+                return new ResponseEntity<>(new ApiResponse(CODE_500, ER014, getParams(ID_PARAMETER)), HttpStatus.BAD_REQUEST);
+            }
             EmployeeDetailDTO employeeDetail = employeeService.getEmployeeDetail(id);
             if (employeeDetail != null) {
                 employeeDetail.setCode(CODE_200);
@@ -131,4 +138,37 @@ public class EmployeeController {
             return new ResponseEntity<>(new ApiResponse(CODE_500, ER023, Collections.emptyList()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateEmployee(@PathVariable Long id, @RequestBody EmployeeRequest employeeRequest) {
+        try {
+            if (id == null) {
+                return new ResponseEntity<>(new ApiResponse(CODE_500, ER001, getParams(ID_PARAMETER)), HttpStatus.BAD_REQUEST);
+            }
+            boolean employeeExists = employeeService.existsById(id);
+            if (!employeeExists) {
+                return new ResponseEntity<>(new ApiResponse(CODE_500, ER013, getParams(ID_PARAMETER)), HttpStatus.BAD_REQUEST);
+            }
+            employeeRequest.setEmployeeId(id);
+            ApiResponse validationResponse = employeeValidator.validateEditEmployee(employeeRequest);
+            if (validationResponse != null) {
+                return new ResponseEntity<>(validationResponse, HttpStatus.OK);
+            }
+
+            boolean isUpdated = employeeService.updateEmployee(id, employeeRequest);
+
+            if (isUpdated) {
+                ApiResponse messageResponse = new ApiResponse(MSG002, "", Collections.emptyList());
+                Map<String, Object> response = new HashMap<>();
+                response.put("code", CODE_200);
+                response.put("employeeId", id);
+                response.put("message", messageResponse);
+                return ResponseEntity.ok(response);
+            } else {
+                return new ResponseEntity<>(new ApiResponse(CODE_500, ER015, Collections.emptyList()), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ApiResponse(CODE_500, ER023, Collections.emptyList()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

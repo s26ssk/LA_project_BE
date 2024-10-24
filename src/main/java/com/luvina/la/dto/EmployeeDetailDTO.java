@@ -25,9 +25,9 @@ public class EmployeeDetailDTO {
         private Long certificationId;
         private String certificationName;
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd")
-        private Date startDate;
+        private Date certificationStartDate;
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd")
-        private Date endDate;
-        private Double score;
+        private Date certificationEndDate;
+        private Double certificationScore;
     }
 }

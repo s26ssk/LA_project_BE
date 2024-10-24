@@ -12,5 +12,5 @@ public class CertificationRequest {
     private Date certificationStartDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd")
     private Date certificationEndDate;
-    private Double employeeCertificationScore;
+    private Double certificationScore;
 }

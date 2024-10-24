@@ -1,5 +1,6 @@
 package com.luvina.la.validator;
 
+import com.luvina.la.entity.Employee;
 import com.luvina.la.payload.ApiResponse;
 import com.luvina.la.payload.CertificationRequest;
 import com.luvina.la.payload.EmployeeRequest;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Component;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -29,10 +32,10 @@ public class EmployeeValidator {
 
     public static final String DATE_FORMAT = "yyyy/MM/dd";
 
-    public ApiResponse validateEmployee(EmployeeRequest request) {
+    public ApiResponse validateAddEmployee(EmployeeRequest request) {
         ApiResponse response;
 
-        response = validateEmployeeLoginId(request.getEmployeeLoginId());
+        response = validateAddEmployeeLoginId(request.getEmployeeLoginId());
         if (response != null) return response;
 
         response = validateEmployeeName(request.getEmployeeName());
@@ -50,7 +53,37 @@ public class EmployeeValidator {
         response = validateEmployeeTelephone(request.getEmployeeTelephone());
         if (response != null) return response;
 
-        response = validateEmployeeLoginPassword(request.getEmployeeLoginPassword());
+        response = validateAddEmployeeLoginPassword(request.getEmployeeLoginPassword());
+        if (response != null) return response;
+
+        response = validateDepartmentId(request.getDepartmentId());
+        if (response != null) return response;
+
+        response = validateCertifications(request.getCertifications());
+        return response;
+    }
+    public ApiResponse validateEditEmployee(EmployeeRequest request) {
+        ApiResponse response;
+
+        response = validateEditEmployeeLoginId(request.getEmployeeLoginId(), request.getEmployeeId());
+        if (response != null) return response;
+
+        response = validateEmployeeName(request.getEmployeeName());
+        if (response != null) return response;
+
+        response = validateEmployeeNameKana(request.getEmployeeNameKana());
+        if (response != null) return response;
+
+        response = validateEmployeeBirthDate(request.getEmployeeBirthDate());
+        if (response != null) return response;
+
+        response = validateEmployeeEmail(request.getEmployeeEmail());
+        if (response != null) return response;
+
+        response = validateEmployeeTelephone(request.getEmployeeTelephone());
+        if (response != null) return response;
+
+        response = validateEditEmployeeLoginPassword(request.getEmployeeLoginPassword());
         if (response != null) return response;
 
         response = validateDepartmentId(request.getDepartmentId());
@@ -60,7 +93,7 @@ public class EmployeeValidator {
         return response;
     }
 
-    private ApiResponse validateEmployeeLoginId(String employeeLoginId) {
+    private ApiResponse validateAddEmployeeLoginId(String employeeLoginId) {
         if (employeeLoginId == null || employeeLoginId.isEmpty()) {
             return new ApiResponse(CODE_500, ER001, getParams(ACCOUNT_NAME));
         }
@@ -71,6 +104,21 @@ public class EmployeeValidator {
             return new ApiResponse(CODE_500, ER019, getParams(ACCOUNT_NAME));
         }
         if (employeeRepository.existsByEmployeeLoginId(employeeLoginId)) {
+            return new ApiResponse(CODE_500, ER003, getParams(ACCOUNT_NAME));
+        }
+        return null;
+    }
+    private ApiResponse validateEditEmployeeLoginId(String employeeLoginId, Long employeeId) {
+        if (employeeLoginId == null || employeeLoginId.isEmpty()) {
+            return new ApiResponse(CODE_500, ER001, getParams(ACCOUNT_NAME));
+        }
+        if (employeeLoginId.length() > 50) {
+            return new ApiResponse(CODE_500, ER006, getParams(ACCOUNT_NAME));
+        }
+        if (!Pattern.matches("^[a-zA-Z0-9_]+$", employeeLoginId) || Character.isDigit(employeeLoginId.charAt(0))) {
+            return new ApiResponse(CODE_500, ER019, getParams(ACCOUNT_NAME));
+        }
+        if (employeeRepository.existsByEmployeeLoginIdAndEmployeeIdNot(employeeLoginId, employeeId)) {
             return new ApiResponse(CODE_500, ER003, getParams(ACCOUNT_NAME));
         }
         return null;
@@ -147,7 +195,7 @@ public class EmployeeValidator {
         return null;
     }
 
-    private ApiResponse validateEmployeeLoginPassword(String employeeLoginPassword) {
+    private ApiResponse validateAddEmployeeLoginPassword(String employeeLoginPassword) {
         if (employeeLoginPassword == null || employeeLoginPassword.isEmpty()) {
             return new ApiResponse(CODE_500, ER001, getParams(PASSWORD));
         }
@@ -156,6 +204,15 @@ public class EmployeeValidator {
         }
         return null;
     }
+    private ApiResponse validateEditEmployeeLoginPassword(String employeeLoginPassword) {
+        if (!employeeLoginPassword.isEmpty()) {
+            if (employeeLoginPassword.length() < 8 || employeeLoginPassword.length() > 50) {
+                return new ApiResponse(CODE_500, ER007, getParams(PASSWORD));
+            }
+        }
+        return null;
+    }
+
 
     private ApiResponse validateDepartmentId(Long departmentId) {
         if (departmentId == null) {
@@ -211,10 +268,10 @@ public class EmployeeValidator {
                 return new ApiResponse(CODE_500, ER012, getParams(CERTIFICATION_START_DATE, CERTIFICATION_END_DATE));
             }
 
-            if (certRequest.getEmployeeCertificationScore() == null) {
+            if (certRequest.getCertificationScore() == null) {
                 return new ApiResponse(CODE_500, ER001, getParams(SCORE));
             }
-            if (certRequest.getEmployeeCertificationScore() < 0) {
+            if (certRequest.getCertificationScore() < 0) {
                 return new ApiResponse(CODE_500, ER018, getParams(SCORE));
             }
         }
