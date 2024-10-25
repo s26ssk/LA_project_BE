@@ -136,6 +136,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         Employee employee = employeeRepository.findById(employeeId).orElse(null);
         if (employee == null) return false;
 
+        // Cập nhật thông tin của nhân viên
         employee.setEmployeeName(employeeRequest.getEmployeeName());
         employee.setEmployeeBirthDate(employeeRequest.getEmployeeBirthDate());
         employee.setEmployeeEmail(employeeRequest.getEmployeeEmail());
@@ -143,46 +144,46 @@ public class EmployeeServiceImpl implements IEmployeeService {
         employee.setEmployeeNameKana(employeeRequest.getEmployeeNameKana());
         employee.setEmployeeLoginId(employeeRequest.getEmployeeLoginId());
 
+        // Mã hóa mật khẩu nếu có
         if (employeeRequest.getEmployeeLoginPassword() != null && !employeeRequest.getEmployeeLoginPassword().isEmpty()) {
             PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             String encodedPassword = passwordEncoder.encode(employeeRequest.getEmployeeLoginPassword());
             employee.setEmployeeLoginPassword(encodedPassword);
         }
 
+        // Cập nhật phòng ban
         Department department = departmentRepository.findById(employeeRequest.getDepartmentId())
                 .orElse(new Department());
         employee.setDepartment(department);
 
-        if (employeeRequest.getCertifications().isEmpty()) {
+        // Xóa các chứng chỉ cũ và thêm mới
+        if (employee.getEmployeesCertifications() != null) {
             employeeCertificationRepository.deleteByEmployeeId(employeeId);
-        } else {
-            Set<EmployeesCertification> existingCertifications = employee.getEmployeesCertifications();
-            Set<EmployeesCertification> updatedCertifications = new HashSet<>();
+        }
 
-            for (CertificationRequest certRequest : employeeRequest.getCertifications()) {
-                Certification certification = certificationRepository.findById(certRequest.getCertificationId())
-                        .orElse(new Certification());
-
-
-                EmployeesCertification employeesCertification = existingCertifications.stream()
-                        .filter(cert -> cert.getCertification().getCertificationId().equals(certRequest.getCertificationId()))
-                        .findFirst()
-                        .orElse(new EmployeesCertification());
-
-                employeesCertification.setCertification(certification);
-                employeesCertification.setStartDate(certRequest.getCertificationStartDate());
-                employeesCertification.setEndDate(certRequest.getCertificationEndDate());
-                employeesCertification.setScore(certRequest.getCertificationScore());
-                employeesCertification.setEmployee(employee);
-
-                updatedCertifications.add(employeesCertification);
+        // Thêm các chứng chỉ mới nếu có
+        if (employeeRequest.getCertifications() != null && !employeeRequest.getCertifications().isEmpty()) {
+            employeeCertificationRepository.deleteByEmployeeId(employeeId);
+            for (CertificationRequest certificationRequest : employeeRequest.getCertifications()) {
+                Certification certification = certificationRepository.findById(certificationRequest.getCertificationId())
+                        .orElse(null);
+                if (certification != null) {
+                    EmployeesCertification employeesCertification = new EmployeesCertification();
+                    employeesCertification.setEmployee(employee);
+                    employeesCertification.setCertification(certification);
+                    employeesCertification.setStartDate(certificationRequest.getCertificationStartDate());
+                    employeesCertification.setEndDate(certificationRequest.getCertificationEndDate());
+                    employeesCertification.setScore(certificationRequest.getCertificationScore());
+                    employee.getEmployeesCertifications().add(employeesCertification);
+                }
             }
-
-            employee.setEmployeesCertifications(updatedCertifications);
         }
 
         employeeRepository.save(employee);
         return true;
     }
+
+
+
 
 }
