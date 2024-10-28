@@ -156,14 +156,11 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 .orElse(new Department());
         employee.setDepartment(department);
 
-        // Xóa các chứng chỉ cũ và thêm mới
-        if (employee.getEmployeesCertifications() != null) {
-            employeeCertificationRepository.deleteByEmployeeId(employeeId);
-        }
+        // Xóa các chứng chỉ cũ của nhân viên
+        employeeCertificationRepository.deleteByEmployeeId(employeeId);
 
         // Thêm các chứng chỉ mới nếu có
         if (employeeRequest.getCertifications() != null && !employeeRequest.getCertifications().isEmpty()) {
-            employeeCertificationRepository.deleteByEmployeeId(employeeId);
             for (CertificationRequest certificationRequest : employeeRequest.getCertifications()) {
                 Certification certification = certificationRepository.findById(certificationRequest.getCertificationId())
                         .orElse(null);
