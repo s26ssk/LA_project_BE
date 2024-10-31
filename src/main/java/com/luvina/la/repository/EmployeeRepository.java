@@ -1,3 +1,7 @@
+/**
+ * Copyright(C) 2024  Luvina
+ * EmployeeRepository.java, 10/10/2024 KhanhNV
+ */
 package com.luvina.la.repository;
 
 import com.luvina.la.dto.EmployeeDTO;
@@ -12,11 +16,28 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+/**
+ * EmployeeRepository là một interface mở rộng JpaRepository,
+ * cung cấp các phương thức CRUD cho thực thể Employee.
+ * Nó cũng cho phép thực hiện các truy vấn tùy chỉnh với @Query.
+ */
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
+    /**
+     * Tìm nhân viên theo login ID.
+     */
     Optional<Employee> findByEmployeeLoginId(String employeeLoginId);
+
+    /**
+     * Tìm nhân viên theo ID.
+     */
     Optional<Employee> findByEmployeeId(Long employeeId);
+
+    /**
+     * Tìm danh sách nhân viên theo các tiêu chí lọc và phân trang.
+     */
+
     @Query("SELECT new com.luvina.la.dto.EmployeeDTO(" +
             "e.employeeId, " +
             "e.employeeName, " +
@@ -48,7 +69,9 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
                                     @Param("ordEndDate") String ordEndDate,
                                     Pageable pageable);
 
-
+    /**
+     * Đếm tổng số bản ghi nhân viên theo các tiêu chí lọc.
+     */
     @Query("SELECT COUNT(e) FROM Employee e " +
             "JOIN e.department d " +
             "LEFT JOIN e.employeesCertifications ec " +
@@ -56,10 +79,10 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
             "WHERE (:departmentId IS NULL OR e.department.departmentId = :departmentId) " +
             "AND (:employeeName IS NULL OR e.employeeName LIKE CONCAT('%', :employeeName, '%'))")
     Integer countTotalRecords(@Param("employeeName") String employeeName,
-                           @Param("departmentId") Long departmentId);
+                              @Param("departmentId") Long departmentId);
 
+    /**
+     * Kiểm tra xem một nhân viên có tồn tại dựa trên login ID hay không.
+     */
     boolean existsByEmployeeLoginId(String employeeLoginId);
-
-    boolean existsByEmployeeLoginIdAndEmployeeIdNot(String employeeLoginId, Long employeeId);
-
 }

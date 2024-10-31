@@ -1,13 +1,20 @@
+/**
+ * Copyright(C) 2024  Luvina
+ * MessageConstants.java, 10/10/2024 KhanhNV
+ */
 package com.luvina.la.config.constants;
 
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Lớp chứa các hằng số mã lỗi, mã thành công và thông điệp liên quan đến ứng dụng.
+ */
 public class MessageConstants {
-    public static final String CODE_200 = "200";
-    public static final String CODE_500 = "500";
+    public static final String CODE_200 = "200"; // Mã thành công
+    public static final String CODE_500 = "500"; // Mã lỗi server
 
-    // Error codes
+    // Mã lỗi
     public static final String ER001 = "ER001";
     public static final String ER002 = "ER002";
     public static final String ER003 = "ER003";
@@ -28,34 +35,37 @@ public class MessageConstants {
     public static final String ER021 = "ER021";
     public static final String ER023 = "ER023";
 
-    // Error messages
-    public static final String ACCOUNT_NAME = "アカウント名";
-    public static final String FULL_NAME = "氏名";
-    public static final String KANA_NAME = "カタカナ氏名";
-    public static final String BIRTH_DATE = "生年月日";
-    public static final String EMAIL = "メールアドレス";
-    public static final String PHONE = "電話番号";
-    public static final String PASSWORD = "パスワード";
-    public static final String GROUP = "グループ";
-    public static final String CERTIFICATION = "資格";
-    public static final String CERTIFICATION_START_DATE = "資格交付日";
-    public static final String CERTIFICATION_END_DATE = "失効日";
-    public static final String SCORE = "点数";
-    public static final String DATE_FORMAT_MESSAGE = "yyyy/MM/dd";
+    // Thông điệp lỗi tương ứng
+    public static final String ACCOUNT_NAME = "アカウント名"; // Tên tài khoản
+    public static final String FULL_NAME = "氏名"; // Họ và tên
+    public static final String KANA_NAME = "カタカナ氏名"; // Tên katakana
+    public static final String BIRTH_DATE = "生年月日"; // Ngày sinh
+    public static final String EMAIL = "メールアドレス"; // Địa chỉ email
+    public static final String PHONE = "電話番号"; // Số điện thoại
+    public static final String PASSWORD = "パスワード"; // Mật khẩu
+    public static final String GROUP = "グループ"; // Nhóm
+    public static final String CERTIFICATION = "資格"; // Chứng chỉ
+    public static final String CERTIFICATION_START_DATE = "資格交付日"; // Ngày cấp chứng chỉ
+    public static final String CERTIFICATION_END_DATE = "失効日"; // Ngày hết hạn
+    public static final String SCORE = "点数"; // Điểm số
+    public static final String DATE_FORMAT_MESSAGE = "yyyy/MM/dd"; // Định dạng ngày
 
-    // Success messages
-    // Thêm nhân viên thành công
-    public static final String MSG001 = "MSG001";
-    // Update nhân viên thành công
-    public static final String MSG002 = "MSG002";
-    // Xóa nhân viên thành công
-    public static final String MSG003 = "MSG003";
+    // Thông điệp thành công
+    public static final String MSG001 = "MSG001"; // Thêm nhân viên thành công
+    public static final String MSG002 = "MSG002"; // Cập nhật nhân viên thành công
+    public static final String MSG003 = "MSG003"; // Xóa nhân viên thành công
 
-    // Parameter names
-    public static final String OFFSET = "オフセット";
-    public static final String LIMIT = "リミット";
-    public static final String ID_PARAMETER = "ID";
+    // Tên tham số
+    public static final String OFFSET = "オフセット"; // Tham số offset
+    public static final String LIMIT = "リミット"; // Tham số limit
+    public static final String ID_PARAMETER = "ID"; // Tham số ID
 
+    /**
+     * Phương thức trả về danh sách các tham số dưới dạng List.
+     *
+     * @param params Tham số đầu vào
+     * @return Danh sách tham số
+     */
     public static List<String> getParams(String... params) {
         return Arrays.asList(params);
     }

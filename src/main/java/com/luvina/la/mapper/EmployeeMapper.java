@@ -1,3 +1,7 @@
+/**
+ * Copyright(C) 2024  Luvina
+ * EmployeeMapper.java, 04/10/2024 KhanhNV
+ */
 package com.luvina.la.mapper;
 
 import com.luvina.la.dto.EmployeeDTO;
@@ -8,7 +12,11 @@ import org.mapstruct.factory.Mappers;
 import java.util.List;
 
 /**
- * use:
+ * Mapper cho chuyển đổi giữa Employee và EmployeeDTO.
+ * Sử dụng @Mapper để chỉ định rằng đây là một mapper của MapStruct.
+ * componentModel = "spring" cho phép sử dụng dependency injection từ Spring.
+ *
+ * Sử dụng:
  *  EmployeeMapper.MAPPER.toEntity(dto);
  *  EmployeeMapper.MAPPER.toList(list);
  */
@@ -20,3 +28,4 @@ public interface EmployeeMapper {
     Employee toDto(EmployeeDTO entity);
     List<EmployeeDTO> toList(Iterable<Employee> list);
 }
+
